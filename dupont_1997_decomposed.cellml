@@ -1,0 +1,259 @@
+<?xml version='1.0'?>
+<model cmeta:id="dupont_erneux_1997" name="dupont_erneux_1997_noIP4" xmlns="http://www.cellml.org/cellml/1.1#" xmlns:cellml="http://www.cellml.org/cellml/1.1#" xmlns:cmeta="http://www.cellml.org/metadata/1.0#" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <import xlink:href="dupont_1997/dupont_erneux_1997.cellml">
+        <component component_ref="R_des" name="R_des"/>
+        <component component_ref="C_cyto" name="C_cyto"/>
+        <component component_ref="I_ra" name="I_ra"/>
+        <component component_ref="I_rable" name="I_rable"/>
+        <component component_ref="IP3" name="IP3"/>
+        <component component_ref="V_PLC" name="V_PLC"/>
+        <component component_ref="V_3K" name="V_3K"/>
+    </import>
+    <!--
+        *******************************************************
+        ***         U   N   I   T   S                       ***
+        *******************************************************
+  -->
+    <units name="micromole">
+        <unit prefix="micro" units="mole"/>
+    </units>
+    <units name="micromolar">
+        <unit units="micromole"/>
+        <unit exponent="-1" units="litre"/>
+    </units>
+    <units name="per_micromolar">
+        <unit exponent="-1" units="micromolar"/>
+    </units>
+    <units name="micromolar_per_second">
+        <unit units="micromolar"/>
+        <unit exponent="-1" units="second"/>
+    </units>
+    <units name="per_micromolar_per_second">
+        <unit exponent="-1" units="micromolar"/>
+        <unit exponent="-1" units="second"/>
+    </units>
+    <units name="per_second">
+        <unit exponent="-1" units="second"/>
+    </units>
+    <!--
+     *********************************************************
+     ***       C   O   M   P   O   N   E   N   T   S       ***
+     *********************************************************
+-->
+    <component name="environment">
+        <variable cmeta:id="environment_time" name="time" public_interface="out" units="second"/>
+    </component>
+    <component name="parameter">
+        <variable name="time" private_interface="out" public_interface="in" units="second"/>
+        <variable cmeta:id="C_cyto_C_cyto" name="C_cyto" private_interface="in" public_interface="out" units="micromolar"/>
+        <variable cmeta:id="IP3_IP3" name="IP3" public_interface="in" units="micromolar"/>
+    </component>
+    <component name="model_parameters">
+        <variable initial_value="1.3" name="V_plc" public_interface="out" units="micromolar_per_second"/>
+        <variable initial_value="0" name="V_k" public_interface="out" units="micromolar_per_second"/>
+        <variable initial_value="1" name="K_k" public_interface="out" units="micromolar"/>
+        <variable initial_value="0.3" name="K_d" public_interface="out" units="micromolar"/>
+        <variable initial_value="2" name="n_d" public_interface="out" units="dimensionless"/>
+        <variable initial_value="0" name="V_p1" public_interface="out" units="micromolar_per_second"/>
+        <variable initial_value="10" name="K_p1" public_interface="out" units="micromolar"/>
+        <variable initial_value="0.2" name="V_p2" public_interface="out" units="micromolar_per_second"/>
+        <variable initial_value="2" name="K_p2" public_interface="out" units="micromolar"/>
+        <variable initial_value="0" name="k" public_interface="out" units="per_second"/>
+        <variable initial_value="1" name="gamma" public_interface="out" units="dimensionless"/>
+        <variable initial_value="0.1" name="alpha" public_interface="out" units="dimensionless"/>
+        <variable initial_value="80" name="Ca_tot" public_interface="out" units="micromolar"/>
+        <variable initial_value="4" name="V_MP" public_interface="out" units="micromolar_per_second"/>
+        <variable initial_value="0.35" name="K_p" public_interface="out" units="micromolar"/>
+        <variable initial_value="2" name="n_p" public_interface="out" units="dimensionless"/>
+        <variable initial_value="0.56" name="K_act" public_interface="out" units="micromolar"/>
+        <variable initial_value="0.15" name="K_inh" public_interface="out" units="micromolar"/>
+        <variable initial_value="3" name="n_a" public_interface="out" units="dimensionless"/>
+        <variable initial_value="4" name="n_i" public_interface="out" units="dimensionless"/>
+        <variable initial_value="0.5" name="K_minus" public_interface="out" units="per_second"/>
+        <variable name="K_plus" public_interface="out" units="per_micromolar_per_second"/>
+        <variable initial_value="7e-4" name="b" public_interface="out" units="per_second"/>
+        <variable initial_value="2.57" name="K_1" public_interface="out" units="per_second"/>
+        <variable initial_value="1" name="K_IP" public_interface="out" units="micromolar"/>
+        <variable name="time" public_interface="in" units="second"/>
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+                <eq/>
+                <ci>K_plus</ci>
+                <apply>
+                    <divide/>
+                    <ci>K_minus</ci>
+                    <apply>
+                        <power/>
+                        <ci>K_inh</ci>
+                        <ci>n_i</ci>
+                    </apply>
+                </apply>
+            </apply>
+        </math>
+    </component>
+    <component name="V_5P">
+        <variable name="V_5P" public_interface="out" units="micromolar"/>
+        <variable name="IP3" public_interface="in" units="micromolar"/>
+        <variable name="V_p1" public_interface="in" units="micromolar_per_second"/>
+        <variable name="K_p1" public_interface="in" units="micromolar"/>
+        <variable name="time" public_interface="in" units="second"/>
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+                <eq/>
+                <ci>V_5P</ci>
+                <apply>
+                    <divide/>
+                    <apply>
+                        <times/>
+                        <ci>V_p1</ci>
+                        <cn cellml:units="second">1</cn>
+                        <ci>IP3</ci>
+                    </apply>
+                    <apply>
+                        <plus/>
+                        <ci>K_p1</ci>
+                        <ci>IP3</ci>
+                    </apply>
+                </apply>
+            </apply>
+        </math>
+    </component>
+    <group>
+        <relationship_ref relationship="encapsulation"/>
+        <component_ref component="parameter">
+            <component_ref component="C_cyto"/>
+        </component_ref>
+    </group>
+    <connection>
+        <map_components component_1="parameter" component_2="C_cyto"/>
+        <map_variables variable_1="C_cyto" variable_2="C_cyto"/>
+    </connection>
+    <connection>
+        <map_components component_1="parameter" component_2="IP3"/>
+        <map_variables variable_1="IP3" variable_2="IP3"/>
+    </connection>
+    <connection>
+        <map_components component_1="environment" component_2="parameter"/>
+        <map_variables variable_1="time" variable_2="time"/>
+    </connection>
+    <connection>
+        <map_components component_1="environment" component_2="model_parameters"/>
+        <map_variables variable_1="time" variable_2="time"/>
+    </connection>
+    <connection>
+        <map_components component_1="environment" component_2="R_des"/>
+        <map_variables variable_1="time" variable_2="time"/>
+    </connection>
+    <connection>
+        <map_components component_1="environment" component_2="C_cyto"/>
+        <map_variables variable_1="time" variable_2="time"/>
+    </connection>
+    <connection>
+        <map_components component_1="environment" component_2="I_ra"/>
+        <map_variables variable_1="time" variable_2="time"/>
+    </connection>
+    <connection>
+        <map_components component_1="environment" component_2="I_rable"/>
+        <map_variables variable_1="time" variable_2="time"/>
+    </connection>
+    <connection>
+        <map_components component_1="environment" component_2="IP3"/>
+        <map_variables variable_1="time" variable_2="time"/>
+    </connection>
+    <connection>
+        <map_components component_1="environment" component_2="V_PLC"/>
+        <map_variables variable_1="time" variable_2="time"/>
+    </connection>
+    <connection>
+        <map_components component_1="environment" component_2="V_3K"/>
+        <map_variables variable_1="time" variable_2="time"/>
+    </connection>
+    <connection>
+        <map_components component_1="environment" component_2="V_5P"/>
+        <map_variables variable_1="time" variable_2="time"/>
+    </connection>
+    <connection>
+        <map_components component_1="R_des" component_2="model_parameters"/>
+        <map_variables variable_1="K_plus" variable_2="K_plus"/>
+        <map_variables variable_1="n_i" variable_2="n_i"/>
+        <map_variables variable_1="K_act" variable_2="K_act"/>
+        <map_variables variable_1="n_a" variable_2="n_a"/>
+        <map_variables variable_1="K_minus" variable_2="K_minus"/>
+    </connection>
+    <connection>
+        <map_components component_1="C_cyto" component_2="model_parameters"/>
+        <map_variables variable_1="K_1" variable_2="K_1"/>
+        <map_variables variable_1="b" variable_2="b"/>
+        <map_variables variable_1="Ca_tot" variable_2="Ca_tot"/>
+        <map_variables variable_1="alpha" variable_2="alpha"/>
+        <map_variables variable_1="V_MP" variable_2="V_MP"/>
+        <map_variables variable_1="n_p" variable_2="n_p"/>
+        <map_variables variable_1="K_p" variable_2="K_p"/>
+        <map_variables variable_1="n_i" variable_2="n_i"/>
+    </connection>
+    <connection>
+        <map_components component_1="I_ra" component_2="model_parameters"/>
+        <map_variables variable_1="n_a" variable_2="n_a"/>
+        <map_variables variable_1="K_act" variable_2="K_act"/>
+    </connection>
+    <connection>
+        <map_components component_1="I_rable" component_2="model_parameters"/>
+        <map_variables variable_1="K_IP" variable_2="K_IP"/>
+    </connection>
+    <connection>
+        <map_components component_1="V_PLC" component_2="model_parameters"/>
+        <map_variables variable_1="gamma" variable_2="gamma"/>
+        <map_variables variable_1="V_plc" variable_2="V_plc"/>
+    </connection>
+    <connection>
+        <map_components component_1="V_3K" component_2="model_parameters"/>
+        <map_variables variable_1="K_d" variable_2="K_d"/>
+        <map_variables variable_1="K_k" variable_2="K_k"/>
+        <map_variables variable_1="n_d" variable_2="n_d"/>
+        <map_variables variable_1="V_k" variable_2="V_k"/>
+    </connection>
+    <connection>
+        <map_components component_1="V_5P" component_2="model_parameters"/>
+        <map_variables variable_1="V_p1" variable_2="V_p1"/>
+        <map_variables variable_1="K_p1" variable_2="K_p1"/>
+    </connection>
+    <connection>
+        <map_components component_1="I_rable" component_2="R_des"/>
+        <map_variables variable_1="R_des" variable_2="R_des"/>
+    </connection>
+    <connection>
+        <map_components component_1="C_cyto" component_2="R_des"/>
+        <map_variables variable_1="C_cyto" variable_2="C_cyto"/>
+    </connection>
+    <connection>
+        <map_components component_1="C_cyto" component_2="I_ra"/>
+        <map_variables variable_1="C_cyto" variable_2="C_cyto"/>
+        <map_variables variable_1="I_ra" variable_2="I_ra"/>
+    </connection>
+    <connection>
+        <map_components component_1="C_cyto" component_2="V_3K"/>
+        <map_variables variable_1="C_cyto" variable_2="C_cyto"/>
+    </connection>
+    <connection>
+        <map_components component_1="I_ra" component_2="I_rable"/>
+        <map_variables variable_1="I_rable" variable_2="I_rable"/>
+    </connection>
+    <connection>
+        <map_components component_1="IP3" component_2="I_rable"/>
+        <map_variables variable_1="IP3" variable_2="IP3"/>
+    </connection>
+    <connection>
+        <map_components component_1="IP3" component_2="V_PLC"/>
+        <map_variables variable_1="V_PLC" variable_2="V_PLC"/>
+    </connection>
+    <connection>
+        <map_components component_1="IP3" component_2="V_3K"/>
+        <map_variables variable_1="IP3" variable_2="IP3"/>
+        <map_variables variable_1="V_3K" variable_2="V_3K"/>
+    </connection>
+    <connection>
+        <map_components component_1="IP3" component_2="V_5P"/>
+        <map_variables variable_1="IP3" variable_2="IP3"/>
+        <map_variables variable_1="V_5P" variable_2="V_5P"/>
+    </connection>
+</model>

@@ -1,0 +1,432 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<model name="RhoH" xmlns="http://www.cellml.org/cellml/1.1#" xmlns:cellml="http://www.cellml.org/cellml/1.1#" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <import xlink:href="RhoH.cellml">
+        <component component_ref="RhoH" name="RhoH"/>
+    </import>
+    <import xlink:href="dupont_erneux_1997_noIP4.cellml">
+        <component component_ref="model_parameters" name="model_parameters"/>
+        <component component_ref="parameter" name="parameter"/>
+        <component component_ref="IP3" name="IP3"/>
+        <component component_ref="V_3K" name="V_3K"/>
+        <component component_ref="V_5P" name="V_5P"/>
+        <component component_ref="C_cyto" name="C_cyto"/>
+        <component component_ref="I_ra" name="I_ra"/>
+        <component component_ref="I_rable" name="I_rable"/>
+        <component component_ref="R_des" name="R_des"/>
+    </import>
+    <import xlink:href="NFATMyocyte_TomidaProtocol_Submodel.cellml">
+        <component component_ref="geometry" name="geometry"/>
+        <component component_ref="calcium" name="calcium"/>
+        <component component_ref="calcineurin" name="calcineurin"/>
+        <component component_ref="NFAT_Cycling" name="NFAT_Cycling"/>
+        <component component_ref="NFAT_Cycling_equations" name="NFAT_Cycling_equations"/>
+    </import>
+    <import xlink:href="NFAT_NFATcytokine.cellml">
+        <component component_ref="NFAT_cytokines" name="NFAT_cytokines"/>
+    </import>
+    <!--
+*******************************************************
+***         U   N   I   T   S                       ***
+*******************************************************
+-->
+    <units name="s">
+        <unit units="second"/>
+    </units>
+    <units name="uM">
+        <unit prefix="micro" units="mole"/>
+        <unit exponent="-1" units="liter"/>
+    </units>
+    <units name="per_s">
+        <unit exponent="-1" units="s"/>
+    </units>
+    <units name="uM_per_s">
+        <unit units="uM"/>
+        <unit exponent="-1" units="s"/>
+    </units>
+    <units name="per_uM_per_s">
+        <unit exponent="-1" units="uM"/>
+        <unit exponent="-1" units="s"/>
+    </units>
+    <units name="per_uM_s">
+        <unit exponent="-1" units="uM"/>
+        <unit exponent="-1" units="s"/>
+    </units>
+    <!--
+*********************************************************
+***       C   O   M   P   O   N   E   N   T   S       ***
+*********************************************************
+-->
+    <component name="environment">
+        <variable name="t" public_interface="out" units="s"/>
+    </component>
+    <component name="dl4cytokines_parameter">
+        <variable initial_value="54.7678" name="k_f1" public_interface="out" units="per_uM_per_s"/>
+        <variable initial_value="0.0031" name="k_r1" public_interface="out" units="per_s"/>
+        <variable name="k_f2" public_interface="in" units="per_s"/>
+        <variable name="k_f3" public_interface="in" units="per_uM_per_s"/>
+        <variable name="k_f4" public_interface="in" units="per_uM_per_s"/>
+        <variable initial_value="0.13486" name="k_r4" public_interface="out" units="per_s"/>
+        <variable initial_value="0.804035" name="k_f5" public_interface="out" units="per_s"/>
+        <variable name="k_f6" public_interface="in" units="per_uM_per_s"/>
+        <variable initial_value="0.71853" name="k_r6" public_interface="out" units="per_s"/>
+        <variable name="k_f7" public_interface="in" units="per_s"/>
+        <variable name="Pi" public_interface="in" units="uM"/>
+        <variable name="V_plc" public_interface="in" units="uM_per_s"/>
+        <variable name="V_k" public_interface="in" units="uM_per_s"/>
+        <variable name="K_k" public_interface="in" units="uM"/>
+        <variable name="K_d" public_interface="in" units="uM"/>
+        <variable name="n_d" public_interface="in" units="dimensionless"/>
+        <variable name="V_p1" public_interface="in" units="uM_per_s"/>
+        <variable name="K_p1" public_interface="in" units="uM"/>
+        <variable name="V_p2" public_interface="in" units="uM_per_s"/>
+        <variable name="K_p2" public_interface="in" units="uM"/>
+        <variable name="k" public_interface="in" units="per_s"/>
+        <variable name="alpha" public_interface="in" units="dimensionless"/>
+        <variable name="gamma" public_interface="in" units="dimensionless"/>
+        <variable name="Ca_tot" public_interface="in" units="uM"/>
+        <variable name="V_MP" public_interface="in" units="uM_per_s"/>
+        <variable name="K_p" public_interface="in" units="uM"/>
+        <variable name="n_p" public_interface="in" units="dimensionless"/>
+        <variable name="K_act" public_interface="in" units="uM"/>
+        <variable name="K_inh" public_interface="in" units="uM"/>
+        <variable name="n_a" public_interface="in" units="dimensionless"/>
+        <variable name="n_i" public_interface="in" units="dimensionless"/>
+        <variable name="K_minus" public_interface="in" units="per_s"/>
+        <variable name="K_plus" public_interface="in" units="uM_per_s"/>
+        <variable name="b" public_interface="in" units="per_s"/>
+        <variable name="K_1" public_interface="in" units="per_s"/>
+        <variable name="K_IP" public_interface="in" units="uM"/>
+        <variable name="Ccn" public_interface="in" units="dimensionless"/>
+        <variable name="Ntot" public_interface="in" units="uM"/>
+        <variable name="M" public_interface="in" units="uM"/>
+        <variable name="K_mN" public_interface="in" units="uM"/>
+        <variable name="n" public_interface="in" units="dimensionless"/>
+        <variable name="K_dN" public_interface="in" units="uM"/>
+        <variable initial_value="0.0515956" name="k_f21" public_interface="out" units="per_uM_s"/>
+        <variable initial_value="0.00297296" name="k_f22" public_interface="out" units="per_s"/>
+        <variable initial_value="0.00215999" name="k_f23" public_interface="out" units="per_s"/>
+        <variable initial_value="0.984383" name="k_f24" public_interface="out" units="per_s"/>
+        <variable initial_value="2.0772" name="k_r21" public_interface="out" units="per_s"/>
+        <variable initial_value="0.334514" name="k_r23" public_interface="out" units="per_uM_s"/>
+        <variable name="stimEnd" public_interface="in" units="s"/>
+        <variable name="pLat" public_interface="in" units="uM"/>
+        <variable initial_value="0" name="hGdl4" units="uM"/>
+        <variable name="act_N" public_interface="in" units="uM"/>
+        <variable name="I_rable" public_interface="in" units="uM"/>
+        <variable name="I_ra" public_interface="in" units="uM"/>
+    </component>
+    <component name="dupont_NFAT">
+        <variable name="t" public_interface="in" units="s"/>
+        <variable name="J" public_interface="out" units="uM"/>
+        <variable initial_value="0.00647734" name="kf" units="per_s"/>
+        <variable name="IP3" public_interface="in" units="uM"/>
+        <variable name="Ca" private_interface="in" public_interface="out" units="uM"/>
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+                <eq/>
+                <ci>J</ci>
+                <apply>
+                    <times/>
+                    <ci>kf</ci>
+                    <ci>IP3</ci>
+                </apply>
+            </apply>
+        </math>
+    </component>
+    <component name="cytokines">
+        <variable name="NFATN_n" public_interface="in" units="uM"/>
+        <variable name="NFATN_c" public_interface="in" units="uM"/>
+        <variable name="NFATp_n" public_interface="in" units="uM"/>
+        <variable name="NFATp_c" public_interface="in" units="uM"/>
+        <variable name="k_f4" public_interface="in" units="per_s"/>
+        <variable name="IFN" public_interface="in" units="uM"/>
+        <variable name="k_f32" public_interface="in" units="per_s"/>
+    </component>
+    <component name="V_PLC">
+        <variable name="V_PLC" public_interface="out" units="uM"/>
+        <variable name="V_plc" public_interface="in" units="uM_per_s"/>
+        <variable initial_value="1" name="gamma" units="dimensionless"/>
+        <variable name="pLat" public_interface="in" units="uM"/>
+        <variable name="t" public_interface="in" units="s"/>
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+                <eq/>
+                <ci>V_PLC</ci>
+                <apply>
+                    <times/>
+                    <ci>pLat</ci>
+                    <ci>gamma</ci>
+                    <ci>V_plc</ci>
+                    <cn cellml:units="second">1</cn>
+                </apply>
+            </apply>
+        </math>
+    </component>
+    <group>
+        <relationship_ref relationship="encapsulation"/>
+        <component_ref component="parameter">
+            <component_ref component="C_cyto"/>
+        </component_ref>
+    </group>
+    <group>
+        <relationship_ref relationship="encapsulation"/>
+        <component_ref component="dupont_NFAT">
+            <component_ref component="calcium"/>
+        </component_ref>
+    </group>
+    <connection>
+        <map_components component_1="NFAT_Cycling_equations" component_2="dl4cytokines_parameter"/>
+        <map_variables variable_1="k_f1" variable_2="k_f21"/>
+        <map_variables variable_1="k_f2" variable_2="k_f22"/>
+        <map_variables variable_1="k_f3" variable_2="k_f23"/>
+        <map_variables variable_1="k_f4" variable_2="k_f24"/>
+        <map_variables variable_1="k_r1" variable_2="k_r21"/>
+        <map_variables variable_1="k_r3" variable_2="k_r23"/>
+    </connection>
+    <connection>
+        <map_components component_1="dl4cytokines_parameter" component_2="I_rable"/>
+        <map_variables variable_1="I_rable" variable_2="I_rable"/>
+    </connection>
+    <connection>
+        <map_components component_1="dl4cytokines_parameter" component_2="I_ra"/>
+        <map_variables variable_1="I_ra" variable_2="I_ra"/>
+    </connection>
+    <connection>
+        <map_components component_1="dupont_NFAT" component_2="IP3"/>
+        <map_variables variable_1="IP3" variable_2="IP3"/>
+    </connection>
+    <connection>
+        <map_components component_1="RhoH" component_2="environment"/>
+        <map_variables variable_1="t" variable_2="t"/>
+    </connection>
+    <connection>
+        <map_components component_1="model_parameters" component_2="environment"/>
+        <map_variables variable_1="time" variable_2="t"/>
+    </connection>
+    <connection>
+        <map_components component_1="dupont_NFAT" component_2="environment"/>
+        <map_variables variable_1="t" variable_2="t"/>
+    </connection>
+    <connection>
+        <map_components component_1="environment" component_2="geometry"/>
+        <map_variables variable_1="t" variable_2="t"/>
+    </connection>
+    <connection>
+        <map_components component_1="environment" component_2="NFAT_cytokines"/>
+        <map_variables variable_1="t" variable_2="t"/>
+    </connection>
+    <connection>
+        <map_components component_1="environment" component_2="parameter"/>
+        <map_variables variable_1="t" variable_2="time"/>
+    </connection>
+    <connection>
+        <map_components component_1="environment" component_2="IP3"/>
+        <map_variables variable_1="t" variable_2="time"/>
+    </connection>
+    <connection>
+        <map_components component_1="environment" component_2="V_PLC"/>
+        <map_variables variable_1="t" variable_2="t"/>
+    </connection>
+    <connection>
+        <map_components component_1="environment" component_2="V_3K"/>
+        <map_variables variable_1="t" variable_2="time"/>
+    </connection>
+    <connection>
+        <map_components component_1="environment" component_2="V_5P"/>
+        <map_variables variable_1="t" variable_2="time"/>
+    </connection>
+    <connection>
+        <map_components component_1="environment" component_2="C_cyto"/>
+        <map_variables variable_1="t" variable_2="time"/>
+    </connection>
+    <connection>
+        <map_components component_1="environment" component_2="I_ra"/>
+        <map_variables variable_1="t" variable_2="time"/>
+    </connection>
+    <connection>
+        <map_components component_1="environment" component_2="I_rable"/>
+        <map_variables variable_1="t" variable_2="time"/>
+    </connection>
+    <connection>
+        <map_components component_1="environment" component_2="R_des"/>
+        <map_variables variable_1="t" variable_2="time"/>
+    </connection>
+    <connection>
+        <map_components component_1="V_PLC" component_2="RhoH"/>
+        <map_variables variable_1="pLat" variable_2="pLat"/>
+    </connection>
+    <connection>
+        <map_components component_1="geometry" component_2="NFAT_cytokines"/>
+        <map_variables variable_1="NFATN_n" variable_2="NFATN_n"/>
+        <map_variables variable_1="J_NFATNn" variable_2="J_NFATNn"/>
+    </connection>
+    <connection>
+        <map_components component_1="calcium" component_2="dupont_NFAT"/>
+        <map_variables variable_1="Ca" variable_2="Ca"/>
+    </connection>
+    <connection>
+        <map_components component_1="parameter" component_2="IP3"/>
+        <map_variables variable_1="IP3" variable_2="IP3"/>
+    </connection>
+    <connection>
+        <map_components component_1="IP3" component_2="V_PLC"/>
+        <map_variables variable_1="V_PLC" variable_2="V_PLC"/>
+    </connection>
+    <connection>
+        <map_components component_1="IP3" component_2="V_3K"/>
+        <map_variables variable_1="IP3" variable_2="IP3"/>
+        <map_variables variable_1="V_3K" variable_2="V_3K"/>
+    </connection>
+    <connection>
+        <map_components component_1="IP3" component_2="V_5P"/>
+        <map_variables variable_1="IP3" variable_2="IP3"/>
+        <map_variables variable_1="V_5P" variable_2="V_5P"/>
+    </connection>
+    <connection>
+        <map_components component_1="V_PLC" component_2="model_parameters"/>
+        <map_variables variable_1="V_plc" variable_2="V_plc"/>
+    </connection>
+    <connection>
+        <map_components component_1="V_3K" component_2="model_parameters"/>
+        <map_variables variable_1="K_d" variable_2="K_d"/>
+        <map_variables variable_1="K_k" variable_2="K_k"/>
+        <map_variables variable_1="n_d" variable_2="n_d"/>
+        <map_variables variable_1="V_k" variable_2="V_k"/>
+    </connection>
+    <connection>
+        <map_components component_1="C_cyto" component_2="V_3K"/>
+        <map_variables variable_1="C_cyto" variable_2="C_cyto"/>
+    </connection>
+    <connection>
+        <map_components component_1="V_5P" component_2="model_parameters"/>
+        <map_variables variable_1="V_p1" variable_2="V_p1"/>
+        <map_variables variable_1="K_p1" variable_2="K_p1"/>
+    </connection>
+    <connection>
+        <map_components component_1="C_cyto" component_2="model_parameters"/>
+        <map_variables variable_1="K_1" variable_2="K_1"/>
+        <map_variables variable_1="b" variable_2="b"/>
+        <map_variables variable_1="Ca_tot" variable_2="Ca_tot"/>
+        <map_variables variable_1="alpha" variable_2="alpha"/>
+        <map_variables variable_1="V_MP" variable_2="V_MP"/>
+        <map_variables variable_1="n_p" variable_2="n_p"/>
+        <map_variables variable_1="K_p" variable_2="K_p"/>
+        <map_variables variable_1="n_i" variable_2="n_i"/>
+    </connection>
+    <connection>
+        <map_components component_1="I_ra" component_2="I_rable"/>
+        <map_variables variable_1="I_rable" variable_2="I_rable"/>
+    </connection>
+    <connection>
+        <map_components component_1="I_ra" component_2="model_parameters"/>
+        <map_variables variable_1="n_a" variable_2="n_a"/>
+        <map_variables variable_1="K_act" variable_2="K_act"/>
+    </connection>
+    <connection>
+        <map_components component_1="I_rable" component_2="R_des"/>
+        <map_variables variable_1="R_des" variable_2="R_des"/>
+    </connection>
+    <connection>
+        <map_components component_1="I_rable" component_2="model_parameters"/>
+        <map_variables variable_1="K_IP" variable_2="K_IP"/>
+    </connection>
+    <connection>
+        <map_components component_1="R_des" component_2="model_parameters"/>
+        <map_variables variable_1="K_plus" variable_2="K_plus"/>
+        <map_variables variable_1="n_i" variable_2="n_i"/>
+        <map_variables variable_1="K_act" variable_2="K_act"/>
+        <map_variables variable_1="n_a" variable_2="n_a"/>
+        <map_variables variable_1="K_minus" variable_2="K_minus"/>
+    </connection>
+    <connection>
+        <map_components component_1="C_cyto" component_2="I_ra"/>
+        <map_variables variable_1="C_cyto" variable_2="C_cyto"/>
+        <map_variables variable_1="I_ra" variable_2="I_ra"/>
+    </connection>
+    <connection>
+        <map_components component_1="cytokines" component_2="geometry"/>
+        <map_variables variable_1="NFATN_n" variable_2="NFATN_n"/>
+    </connection>
+    <connection>
+        <map_components component_1="cytokines" component_2="NFAT_Cycling"/>
+        <map_variables variable_1="NFATN_c" variable_2="NFATN_c"/>
+        <map_variables variable_1="NFATp_n" variable_2="NFATp_n"/>
+        <map_variables variable_1="NFATp_c" variable_2="NFATp_c"/>
+    </connection>
+    <connection>
+        <map_components component_1="dupont_NFAT" component_2="calcineurin"/>
+        <map_variables variable_1="J" variable_2="Ca"/>
+    </connection>
+    <connection>
+        <map_components component_1="cytokines" component_2="NFAT_cytokines"/>
+        <map_variables variable_1="k_f4" variable_2="k_f4"/>
+        <map_variables variable_1="IFN" variable_2="IFN"/>
+        <map_variables variable_1="k_f32" variable_2="k_f32"/>
+    </connection>
+    <connection>
+        <map_components component_1="RhoH" component_2="dl4cytokines_parameter"/>
+        <map_variables variable_1="k_f1" variable_2="k_f1"/>
+        <map_variables variable_1="k_r1" variable_2="k_r1"/>
+        <map_variables variable_1="k_f2" variable_2="k_f2"/>
+        <map_variables variable_1="k_f3" variable_2="k_f3"/>
+        <map_variables variable_1="k_f4" variable_2="k_f4"/>
+        <map_variables variable_1="k_r4" variable_2="k_r4"/>
+        <map_variables variable_1="k_f5" variable_2="k_f5"/>
+        <map_variables variable_1="k_f6" variable_2="k_f6"/>
+        <map_variables variable_1="k_r6" variable_2="k_r6"/>
+        <map_variables variable_1="k_f7" variable_2="k_f7"/>
+        <map_variables variable_1="Pi" variable_2="Pi"/>
+        <map_variables variable_1="pLat" variable_2="pLat"/>
+    </connection>
+    <connection>
+        <map_components component_1="model_parameters" component_2="dl4cytokines_parameter"/>
+        <map_variables variable_1="V_plc" variable_2="V_plc"/>
+        <map_variables variable_1="V_k" variable_2="V_k"/>
+        <map_variables variable_1="K_k" variable_2="K_k"/>
+        <map_variables variable_1="K_d" variable_2="K_d"/>
+        <map_variables variable_1="n_d" variable_2="n_d"/>
+        <map_variables variable_1="V_p1" variable_2="V_p1"/>
+        <map_variables variable_1="K_p1" variable_2="K_p1"/>
+        <map_variables variable_1="V_p2" variable_2="V_p2"/>
+        <map_variables variable_1="K_p2" variable_2="K_p2"/>
+        <map_variables variable_1="k" variable_2="k"/>
+        <map_variables variable_1="gamma" variable_2="gamma"/>
+        <map_variables variable_1="alpha" variable_2="alpha"/>
+        <map_variables variable_1="Ca_tot" variable_2="Ca_tot"/>
+        <map_variables variable_1="V_MP" variable_2="V_MP"/>
+        <map_variables variable_1="K_p" variable_2="K_p"/>
+        <map_variables variable_1="n_p" variable_2="n_p"/>
+        <map_variables variable_1="K_act" variable_2="K_act"/>
+        <map_variables variable_1="K_inh" variable_2="K_inh"/>
+        <map_variables variable_1="n_a" variable_2="n_a"/>
+        <map_variables variable_1="n_i" variable_2="n_i"/>
+        <map_variables variable_1="K_minus" variable_2="K_minus"/>
+        <map_variables variable_1="K_plus" variable_2="K_plus"/>
+        <map_variables variable_1="b" variable_2="b"/>
+        <map_variables variable_1="K_1" variable_2="K_1"/>
+        <map_variables variable_1="K_IP" variable_2="K_IP"/>
+    </connection>
+    <group>
+        <relationship_ref relationship="encapsulation"/>
+        <component_ref component="geometry">
+            <component_ref component="dl4cytokines_parameter"/>
+        </component_ref>
+    </group>
+    <connection>
+        <map_components component_1="geometry" component_2="dl4cytokines_parameter"/>
+        <map_variables variable_1="Ccn" variable_2="Ccn"/>
+    </connection>
+    <connection>
+        <map_components component_1="calcineurin" component_2="dl4cytokines_parameter"/>
+        <map_variables variable_1="Ntot" variable_2="Ntot"/>
+        <map_variables variable_1="M" variable_2="M"/>
+        <map_variables variable_1="K_mN" variable_2="K_mN"/>
+        <map_variables variable_1="n" variable_2="n"/>
+        <map_variables variable_1="K_dN" variable_2="K_dN"/>
+        <map_variables variable_1="act_N" variable_2="act_N"/>
+    </connection>
+    <connection>
+        <map_components component_1="calcium" component_2="dl4cytokines_parameter"/>
+        <map_variables variable_1="stimEnd" variable_2="stimEnd"/>
+    </connection>
+</model>

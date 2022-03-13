@@ -1,0 +1,115 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<model name="NFAT_NFATCytokine" xmlns="http://www.cellml.org/cellml/1.1#" xmlns:cellml="http://www.cellml.org/cellml/1.1#" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <import xlink:href="NFATMyocyte_TomidaProtocol_Submodel.cellml">
+        <component component_ref="geometry" name="geometry"/>
+    </import>
+    <!--
+*******************************************************
+***         U   N   I   T   S                       ***
+*******************************************************
+-->
+    <units name="s">
+        <unit units="second"/>
+    </units>
+    <units name="uM">
+        <unit prefix="micro" units="mole"/>
+        <unit exponent="-1" units="liter"/>
+    </units>
+    <units name="per_s">
+        <unit exponent="-1" units="s"/>
+    </units>
+    <units name="uM_per_s">
+        <unit units="uM"/>
+        <unit exponent="-1" units="s"/>
+    </units>
+    <!--
+*********************************************************
+***       C   O   M   P   O   N   E   N   T   S       ***
+*********************************************************
+-->
+    <component name="environment">
+        <variable name="t" public_interface="out" units="s"/>
+    </component>
+    <component name="NFAT_cytokines">
+        <variable name="t" public_interface="in" units="s"/>
+        <variable name="NFATN_n" public_interface="in" units="uM"/>
+        <variable name="J_NFATNn" public_interface="in" units="uM_per_s"/>
+        <variable name="J4" units="uM_per_s"/>
+        <!--        var J5: uM_per_s;
+        var J31: uM_per_s;-->
+        <variable name="J32" units="uM_per_s"/>
+        <variable initial_value="0.0683688" name="k_f4" public_interface="out" units="per_s"/>
+        <!--        var k_f5: per_s {init: 23.1163, pub: out};-->
+        <variable initial_value="0" name="IFN" public_interface="out" units="uM"/>
+        <!--        var TNF: uM {init: 0, pub: out};
+        var k_f31: per_s {init: 0.0291491, pub: out};-->
+        <variable initial_value="9.78575e-07" name="k_f32" public_interface="out" units="per_s"/>
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+                <eq/>
+                <ci>J4</ci>
+                <apply>
+                    <times/>
+                    <ci>k_f4</ci>
+                    <ci>NFATN_n</ci>
+                </apply>
+            </apply>
+            <!--        J5 = k_f5*NFATN_n;
+        J31 = k_f31*TNF;-->
+            <apply>
+                <eq/>
+                <ci>J32</ci>
+                <apply>
+                    <times/>
+                    <ci>k_f32</ci>
+                    <ci>IFN</ci>
+                </apply>
+            </apply>
+            <!--        ode(NFATN_n, t) = J_NFATNn-J4-J5;-->
+            <apply>
+                <eq/>
+                <apply>
+                    <diff/>
+                    <bvar>
+                        <ci>t</ci>
+                    </bvar>
+                    <ci>NFATN_n</ci>
+                </apply>
+                <apply>
+                    <minus/>
+                    <ci>J_NFATNn</ci>
+                    <ci>J4</ci>
+                </apply>
+            </apply>
+            <apply>
+                <eq/>
+                <apply>
+                    <diff/>
+                    <bvar>
+                        <ci>t</ci>
+                    </bvar>
+                    <ci>IFN</ci>
+                </apply>
+                <apply>
+                    <minus/>
+                    <ci>J4</ci>
+                    <ci>J32</ci>
+                </apply>
+            </apply>
+        </math>
+        <!--        ode(TNF, t) = J5-J31;-->
+    </component>
+    <connection>
+        <map_components component_1="environment" component_2="geometry"/>
+        <map_variables variable_1="t" variable_2="t"/>
+    </connection>
+    <connection>
+        <map_components component_1="environment" component_2="NFAT_cytokines"/>
+        <map_variables variable_1="t" variable_2="t"/>
+    </connection>
+    <connection>
+        <map_components component_1="geometry" component_2="NFAT_cytokines"/>
+        <map_variables variable_1="NFATN_n" variable_2="NFATN_n"/>
+        <map_variables variable_1="J_NFATNn" variable_2="J_NFATNn"/>
+    </connection>
+</model>
